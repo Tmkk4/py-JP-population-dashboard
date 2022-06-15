@@ -39,7 +39,7 @@ def fetchAllPref():
 
     del(_prefs[0])  # "全国の人口"のデータレコード prefs[0]を削除 -> # index: 北海道[0],...,沖縄県[46] <- '01000,北海道,"5,224,614","2,465,088","2,759,526"\n',...
 
-    print(_prefs)
+    #print(_prefs)
     p = ''
     prefs =[[0 for m in range(5)] for n in range(47)]   # 整形した都道府県別人口レコード
     i = 0
@@ -74,6 +74,21 @@ def fetchAllPref():
 
     return prefs  # [[都道府県コード,都道府県名,総人口,男性人口,女性人口],...]:: List[List[str,str,int,int,int],...]
 
+def avg(pops):
+    """
+    与えられたデータ群の相加平均を返す
+    :param pops: 原データリスト :: List[int]
+    :return:原データリストの相加平均値 :: float
+    """
+    n = len(pops)  # 対象データの個数
+    sum = 0
+    for i in pops:
+        sum += i
+    return sum / n
+
+
+
+
 
 def calcStat(prefs):
     """
@@ -81,8 +96,12 @@ def calcStat(prefs):
     :param prefs: 都道府県別人口レコード :: List[List[str,str,int,int,int],...] :
     :return: 全国47都道府県の 平均人口,中央値,最大値,最小値,分散,標準偏差 :: dict[str,float]
     """
-    result
+    result = {"avg": 0, "median": 0, "max": 0, "min": 0, "variance": 0, "std_dev": 0}
+    # 基本統計量) avg:平均, median:中央値, max:最大, min:最小, variance:分散, std_dev:標準偏差(standard deviation) :: dict{str:float}
 
+    result["avg"] = pref# 平均
+
+    return result
 def doRanking(prefs, option):
     """
     指標ごとの 都道府県別人口ランキング順位を返す; 指標 : 最多,最少,中間...
@@ -98,3 +117,4 @@ def doRanking(prefs, option):
 if __name__ == '__main__':
     # main()
     fetchAllPref()
+    print(avg([1,99]))
