@@ -76,6 +76,20 @@ def fetchAllPref():
     return prefs  # [[都道府県コード,都道府県名,総人口,男性人口,女性人口],...]:: List[List[str,str,int,int,int],...]
 
 
+def getPops(prefs):
+    """
+    都道府県別人口のみからなるListを返す
+    :param prefs:都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]]
+    :return:都道府県別人口のみからなるList [0]～[46]
+    """
+    pops = []
+    for i in prefs:
+        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
+    n = len(pops)  # 対象データの個数
+    return pops
+
+
+
 
 def avg(prefs):
     """
@@ -84,10 +98,9 @@ def avg(prefs):
     :param pops: 原データリスト :: List[int]
     :return:原データリストの相加平均値 :: float
     """
-    pops = []
-    for i in prefs:
-        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
-    n = len(pops)  # 対象データの個数
+    pops = getPops(prefs)
+    n = len(pops)
+
     sum = 0
     if n == 47:
         for i in pops:
@@ -103,10 +116,8 @@ def median(prefs):
     :param pops: 原データリスト :: List[int]
     :return:原データリストの中央値 :: float
     """
-    pops = []
-    for i in prefs:
-        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
-    n = len(pops)  # 対象データの個数
+    pops = getPops(prefs)
+    n = len(pops)
 
     med = statistics.median(pops)  # 標準ライブラリ statisticsを用いて 中央値 求める
     return med
@@ -118,10 +129,8 @@ def popmax(prefs):
     :param pops: 原データリスト :: List[int]
     :return:原データリストの最大値 :: float
     """
-    pops = []
-    for i in prefs:
-        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
-    n = len(pops)  # 対象データの個数
+    pops = getPops(prefs)
+    n = len(pops)
 
     return max(pops)
 
@@ -136,10 +145,8 @@ def popmin(prefs):
     :param pops: 原データリスト :: List[int]
     :return:原データリストの最小値 :: float
     """
-    pops = []
-    for i in prefs:
-        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
-    n = len(pops)  # 対象データの個数
+    pops = getPops(prefs)
+    n = len(pops)
 
     return min(pops)
 
@@ -151,10 +158,8 @@ def var(prefs):
     :param pops: 原データリスト :: List[int]
     :return:原データリストの分散値 :: float
     """
-    pops = []
-    for i in prefs:
-        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
-    n = len(pops)  # 対象データの個数
+    pops = getPops(prefs)
+    n = len(pops)
 
     devsum = 0  # 偏差の2乗和
     av = avg(prefs)  # 相加平均
@@ -201,8 +206,9 @@ def mkRanking(prefs, option):
     指標ごとの 都道府県別人口ランキング順位を返す; 指標 : 最多,最少,中間...
     :param prefs: 都道府県別人口データレコード
     :param option: ランキングリストのオプション: 降順(既定):0,昇順:1
-    :return: 都道府県別人口ランキング順位 :: list[int]
+    :return: 都道府県別人口ランキング順位 :: List[int]
     """
+
 
 
 
@@ -215,7 +221,7 @@ if __name__ == '__main__':
     print("--- 日本全国の都道府県別人口 ---")
     result = calcStat()
 
-    print(f"""平均値 : {result["avg"]} \n中央値  : {result["median"]} \n --- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n --- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}""")
+    print(f"""平均値 : {result["avg"]} \n中央値  : {result["median"]} \n--- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n--- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}\n------""")
 while 1:
         opt = input("都道府県別人口ランキングを表示\n表示順を選択 1:降順(>) 2:昇順(<) 終了:9 >> ")
         if opt == "1":
