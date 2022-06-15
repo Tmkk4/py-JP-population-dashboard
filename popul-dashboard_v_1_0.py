@@ -6,6 +6,8 @@
     quote :
             regex :
 """
+import math
+import statistics  # for median
 import re
 import sys
 
@@ -69,40 +71,132 @@ def fetchAllPref():
         i += 1  # 0 - 46 :: int 都道府県別人口レコード 生成用
 
 
-
     print("fetched: ", prefs)
 
     return prefs  # [[都道府県コード,都道府県名,総人口,男性人口,女性人口],...]:: List[List[str,str,int,int,int],...]
 
-def avg(pops):
+
+
+def avg(prefs):
     """
-    与えられたデータ群の相加平均を返す
+    47都道府県別人口の相加平均を返す
+    :param prefs:都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]]
     :param pops: 原データリスト :: List[int]
     :return:原データリストの相加平均値 :: float
     """
+    pops = []
+    for i in prefs:
+        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
     n = len(pops)  # 対象データの個数
     sum = 0
-    for i in pops:
-        sum += i
-    return sum / n
+    if n == 47:
+        for i in pops:
+            sum += i
+        return sum / n
+    else:
+        return "< 47 data"  # データが不完全
 
-
-
-
-
-def calcStat(prefs):
+def median(prefs):
     """
-    都道府県別人口を受け取り,基本統計量を返す
-    :param prefs: 都道府県別人口レコード :: List[List[str,str,int,int,int],...] :
+    47都道府県別人口の中央値を返す (データ数47であるため, 中央値は確実に原データ中に存在する)
+    :param prefs: 都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]
+    :param pops: 原データリスト :: List[int]
+    :return:原データリストの中央値 :: float
+    """
+    pops = []
+    for i in prefs:
+        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
+    n = len(pops)  # 対象データの個数
+
+    med = statistics.median(pops)  # 標準ライブラリ statisticsを用いて 中央値 求める
+    return med
+
+def popmax(prefs):
+    """
+    47都道府県別人口中の 最大値 を返す
+    :param prefs: 都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]
+    :param pops: 原データリスト :: List[int]
+    :return:原データリストの最大値 :: float
+    """
+    pops = []
+    for i in prefs:
+        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
+    n = len(pops)  # 対象データの個数
+
+    return max(pops)
+
+
+
+
+
+def popmin(prefs):
+    """
+    47都道府県別人口の 最小値 を返す
+    :param prefs: 都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]
+    :param pops: 原データリスト :: List[int]
+    :return:原データリストの最小値 :: float
+    """
+    pops = []
+    for i in prefs:
+        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
+    n = len(pops)  # 対象データの個数
+
+    return min(pops)
+
+
+def var(prefs):
+    """
+    47都道府県別人口の 分散値を返す
+    :param prefs: 都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]
+    :param pops: 原データリスト :: List[int]
+    :return:原データリストの分散値 :: float
+    """
+    pops = []
+    for i in prefs:
+        pops.append(i[2])  # 都道府県別総人口のみからなるList生成 :: List[int]
+    n = len(pops)  # 対象データの個数
+
+    devsum = 0  # 偏差の2乗和
+    av = avg(prefs)  # 相加平均
+    for i in pops:
+        devsum += (i - av)**2  # 偏差の2乗和
+    var = devsum / n
+    return var
+
+
+
+def stddev(prefs):
+    """
+    47都道府県別人口の 標準偏差値を返す
+    :param prefs: 都道府県別人口レコード :: List[List[str(都道府県コード),str(都道府県名),int(総人口),int(男性人口),int(女性人口)]
+    :return:標準偏差値 :: float
+    """
+    # 標準偏差 = 分散の平方根
+    sigma = math.sqrt(var(prefs))
+    return sigma  # 標準偏差値
+
+
+
+
+
+
+
+
+def calcStat():
+    """
+    都道府県別人口から,基本統計量を返す
+
     :return: 全国47都道府県の 平均人口,中央値,最大値,最小値,分散,標準偏差 :: dict[str,float]
     """
-    result = {"avg": 0, "median": 0, "max": 0, "min": 0, "variance": 0, "std_dev": 0}
+    prefs_data = fetchAllPref()
+    result = {"avg": avg(prefs_data), "median": median(prefs_data), "max": popmax(prefs_data), "min": popmin(prefs_data), "variance": var(prefs_data),
+              "std_dev": stddev(prefs_data)}
     # 基本統計量) avg:平均, median:中央値, max:最大, min:最小, variance:分散, std_dev:標準偏差(standard deviation) :: dict{str:float}
 
-    result["avg"] = pref# 平均
-
     return result
-def doRanking(prefs, option):
+
+
+def mkRanking(prefs, option):
     """
     指標ごとの 都道府県別人口ランキング順位を返す; 指標 : 最多,最少,中間...
     :param prefs: 都道府県別人口データレコード
@@ -116,5 +210,10 @@ def doRanking(prefs, option):
 
 if __name__ == '__main__':
     # main()
-    fetchAllPref()
-    print(avg([1,99]))
+    #fetchAllPref()
+    print(avg(fetchAllPref()))
+    print(var(fetchAllPref()))
+    print(stddev(fetchAllPref()))
+    print(median(fetchAllPref()))
+    print(popmax(fetchAllPref()))
+    print(popmin(fetchAllPref()))
