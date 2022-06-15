@@ -71,7 +71,7 @@ def fetchAllPref():
         i += 1  # 0 - 46 :: int 都道府県別人口レコード 生成用
 
 
-    print("fetched: ", prefs)
+    #print("fetched: ", prefs)
 
     return prefs  # [[都道府県コード,都道府県名,総人口,男性人口,女性人口],...]:: List[List[str,str,int,int,int],...]
 
@@ -208,12 +208,12 @@ def mkRanking(prefs, option):
 
 
 
+
 if __name__ == '__main__':
     # main()
     #fetchAllPref()
-    print(avg(fetchAllPref()))
-    print(var(fetchAllPref()))
-    print(stddev(fetchAllPref()))
-    print(median(fetchAllPref()))
-    print(popmax(fetchAllPref()))
-    print(popmin(fetchAllPref()))
+    print("--- 日本全国の都道府県別人口 ---")
+    result = calcStat()
+
+    print(f"""平均値 : {result["avg"]} \n中央値  : {result["median"]} \n --- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n --- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}""")
+
