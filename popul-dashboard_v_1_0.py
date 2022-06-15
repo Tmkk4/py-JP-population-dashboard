@@ -216,4 +216,18 @@ if __name__ == '__main__':
     result = calcStat()
 
     print(f"""平均値 : {result["avg"]} \n中央値  : {result["median"]} \n --- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n --- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}""")
-
+while 1:
+        opt = input("都道府県別人口ランキングを表示\n表示順を選択 1:降順(>) 2:昇順(<) 終了:9 >> ")
+        if opt == "1":
+            # 降順(上が最大, 下が最小)で表示
+            print("--- 降順で表示 ---")
+            print("--- -------- ---")
+        elif opt == "2":
+            # 昇順(上が最小, 下が最大)で表示
+            print("--- 昇順で表示 ---")
+            print("--- -------- ---")
+        elif opt == "9":
+            print("終了...")
+            sys.exit()
+        else:
+            print("正しく選択してください")
