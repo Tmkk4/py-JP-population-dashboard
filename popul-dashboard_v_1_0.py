@@ -7,6 +7,7 @@
             regex :
 """
 import math
+import pprint
 import statistics  # for median
 import re
 import sys
@@ -16,7 +17,8 @@ def fetchAllPref():
     人口データCSVファイルから都道府県レベルでの人口データを抽出し, 各都道府県の人口を返す
 
     CSVの1行 : エリアコード 01000,エリア名,総人口,男性人口,女性人口
-    :return : 都道府県別人口データ) :: list[str] : '01000,北海道,"5,224,614","2,465,088","2,759,526"\n', ..
+    :return : 都道府県別人口データ)[[都道府県コード,都道府県名,総人口,男性人口,女性人口],...]:: List[List[str,str,int,int,int],...]
+
     """
     _prefs = []  # 都道府県別人口レコードの集合
     f = open('FEH_00200521_220610143730.csv', 'r', encoding="utf-8")
@@ -106,8 +108,7 @@ def avg(prefs):
         for i in pops:
             sum += i
         return sum / n
-    else:
-        return "< 47 data"  # データが不完全
+
 
 def median(prefs):
     """
@@ -130,7 +131,6 @@ def popmax(prefs):
     :return:原データリストの最大値 :: float
     """
     pops = getPops(prefs)
-    n = len(pops)
 
     return max(pops)
 
@@ -146,7 +146,6 @@ def popmin(prefs):
     :return:原データリストの最小値 :: float
     """
     pops = getPops(prefs)
-    n = len(pops)
 
     return min(pops)
 
@@ -201,13 +200,42 @@ def calcStat():
     return result
 
 
-def mkRanking(prefs, option):
+def mkRanking(option):
     """
-    指標ごとの 都道府県別人口ランキング順位を返す; 指標 : 最多,最少,中間...
-    :param prefs: 都道府県別人口データレコード
-    :param option: ランキングリストのオプション: 降順(既定):0,昇順:1
-    :return: 都道府県別人口ランキング順位 :: List[int]
+    都道府県別人口ランキング順位を返す; 指標 : 最多,最少,中間...も示す
+    :param option: ランキングリストのオプション: 降順:"1",昇順:"2"
+    :return: 都道府県別人口ランキングリスト :: List[List[str,str,int,int,int],...]
     """
+    prefsPops = fetchAllPref()  # :: List[List[str,str,int,int,int],...]  # 都道府県別人口レコードリスト
+    sortedPops = sorted(prefsPops, key = lambda x: x[2])  # 都道府県別人口によって昇順にてソート
+
+    if option == "2":
+        return sortedPops  # 昇順でソートされた都道府県別人口リスト :: List[List[str,str,int,int,int],...]; min -> max
+    elif option == "1":
+        sortedPops.reverse()
+        return sortedPops  # 降順でソートされた都道府県別人口リスト :: List[List[str,str,int,int,int],...]; max -> min
+
+
+def showRanking(option):
+    """
+    都道府県別人口ランキング をCLI出力
+    :param option:ランキングリストのオプション: 降順:"1",昇順:"2"
+    :return: None
+    """
+    ranking = mkRanking(option)  # 指定された順序による都道府県別人口ランキングを生成
+    print("   都道府県名,    総人口,    内男性,    内女性")
+    rank = 1
+    for p in ranking:
+        print(f"#{rank} : ", end='')
+        for c in p[1:5]:
+            print(c, end='    ')
+        print('')
+        rank += 1
+
+
+
+
+
 
 
 
@@ -220,20 +248,24 @@ if __name__ == '__main__':
     #fetchAllPref()
     print("--- 日本全国の都道府県別人口 ---")
     result = calcStat()
+    print(f"""平均値 : {result["avg"]} \n中央値 : {result["median"]} \n--- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n--- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}\n------""")
 
-    print(f"""平均値 : {result["avg"]} \n中央値  : {result["median"]} \n--- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n--- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}\n------""")
 while 1:
-        opt = input("都道府県別人口ランキングを表示\n表示順を選択 1:降順(>) 2:昇順(<) 終了:9 >> ")
-        if opt == "1":
-            # 降順(上が最大, 下が最小)で表示
-            print("--- 降順で表示 ---")
-            print("--- -------- ---")
-        elif opt == "2":
-            # 昇順(上が最小, 下が最大)で表示
-            print("--- 昇順で表示 ---")
-            print("--- -------- ---")
-        elif opt == "9":
-            print("終了...")
-            sys.exit()
-        else:
-            print("正しく選択してください")
+    opt = input("都道府県別人口ランキングを表示\n表示順を選択 1:降順(>) 2:昇順(<) 終了:9 >> ")
+    if opt == "1":
+        # 降順(上が最大, 下が最小)で表示
+        print("--- 降順で表示 ---")
+        #pprint.pprint(mkRanking(opt))
+        showRanking(opt)
+
+        print("--- -------- ---")
+    elif opt == "2":
+        # 昇順(上が最小, 下が最大)で表示
+        print("--- 昇順で表示 ---")
+        showRanking(opt)
+        print("--- -------- ---")
+    elif opt == "9":
+        print("終了...")
+        sys.exit()
+    else:
+        print("正しく選択してください")
