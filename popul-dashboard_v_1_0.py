@@ -224,11 +224,41 @@ def showRanking(option):
     """
     ranking = mkRanking(option)  # 指定された順序による都道府県別人口ランキングを生成
     print("   都道府県名,    総人口,    内男性,    内女性")
-    rank = 1
+    rank = 1  #  ランキング順位 表示用
+    fontcol = ['', '']  # ランキングレコード表示フォントの色
     for p in ranking:
-        print(f"#{rank} : ", end='')
+
+        if option == "1":
+            # 降順(#1:最大, #47:最小)
+            if rank == 1:
+                # 降順なら1位は最大値
+                # 1位はフォント色変更
+                fontcol = '\033[31m[最大]'  # 赤色文字
+            elif rank == 47:
+                # 降順なら47位は最小値
+                # 47位はフォント色変更
+                fontcol = '\033[34m[最小]'  # 青色文字
+            else:
+                fontcol = '\033[0m     '  # 色RESET
+        elif option == "2":
+            # 昇順(#1:最小, #2：最大)
+            if rank == 1:
+                # 昇順なら1位は最小値
+                fontcol = '\033[34m[最小]'  # 青色文字
+            elif rank == 47:
+                # 昇順なら最大値
+                fontcol = '\033[31m[最大]'  # 赤色文字
+            else:
+                fontcol = '\033[0m     '  # 色RESET
+        if rank == 24:
+            #  中央値
+            fontcol = '\033[35m[中央値]'  # マゼンタ(MAGENTA)
+
+        # ランキング表示部
+        print(f"{fontcol}#{rank} : ", end='')
         for c in p[1:5]:
             print(c, end='    ')
+
         print('')
         rank += 1
 
@@ -250,22 +280,22 @@ if __name__ == '__main__':
     result = calcStat()
     print(f"""平均値 : {result["avg"]} \n中央値 : {result["median"]} \n--- \n最大値 : {result["max"]} \n最小値 : {result["min"]} \n--- \n分散値 : {result["variance"]}\n標準偏差値 : {result["std_dev"]}\n------""")
 
-while 1:
-    opt = input("都道府県別人口ランキングを表示\n表示順を選択 1:降順(>) 2:昇順(<) 終了:9 >> ")
-    if opt == "1":
-        # 降順(上が最大, 下が最小)で表示
-        print("--- 降順で表示 ---")
-        #pprint.pprint(mkRanking(opt))
-        showRanking(opt)
+    while 1:
+        opt = input("\033[0m都道府県別人口ランキングを表示\n表示順を選択 1:降順(>) 2:昇順(<) 終了:9 >> ")  # フォント色RESETして表示
+        if opt == "1":
+            # 降順(上が最大, 下が最小)で表示
+            print("--- 降順で表示 ---")
+            #pprint.pprint(mkRanking(opt))
+            showRanking(opt)
 
-        print("--- -------- ---")
-    elif opt == "2":
-        # 昇順(上が最小, 下が最大)で表示
-        print("--- 昇順で表示 ---")
-        showRanking(opt)
-        print("--- -------- ---")
-    elif opt == "9":
-        print("終了...")
-        sys.exit()
-    else:
-        print("正しく選択してください")
+            print("--- -------- ---")
+        elif opt == "2":
+            # 昇順(上が最小, 下が最大)で表示
+            print("--- 昇順で表示 ---")
+            showRanking(opt)
+            print("--- -------- ---")
+        elif opt == "9":
+            print("終了...")
+            sys.exit()
+        else:
+            print("正しく選択してください")
